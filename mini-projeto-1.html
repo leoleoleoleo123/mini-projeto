@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Simulador de Cofre</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 40px;
+        }
+
+        #cofre-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #333;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 300px;
+        }
+
+        /* Display */
+        #display {
+            font-size: 2rem;
+            width: 200px;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 2px solid #333;
+            border-radius: 8px;
+        }
+
+        /* Classes para cores do display */
+        .display-normal {
+            background-color: #ccc;
+            color: #000;
+        }
+
+        .display-green {
+            background-color: rgb(0, 241, 0);
+            color: #000000;
+        }
+
+        .display-red {
+            background-color: #f00;
+            color: #fff;
+        }
+
+        /* Teclado numérico */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .keypad button {
+            font-size: 1.2rem;
+            padding: 15px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+        }
+
+        /* Botão de alarme */
+        #alarm-toggle {
+            padding: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        /* Desabilitar botões ao alarme disparar */
+        .disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="cofre-container">
+        <h1>Simulador de Cofre</h1>
+
+        <!-- Botão para ativar/desativar o alarme -->
+        <button id="alarm-toggle" onclick="alternarAlarme()">Alarme: DESLIGADO</button>
+
+        <!-- Display de 4 dígitos -->
+        <div id="display" class="display-normal">----</div>
+
+        <!-- Teclado numérico -->
+        <div class="keypad" id="keypad">
+            <button onclick="digitar(1)">1</button>
+            <button onclick="digitar(2)">2</button>
+            <button onclick="digitar(3)">3</button>
+            <button onclick="digitar(4)">4</button>
+            <button onclick="digitar(5)">5</button>
+            <button onclick="digitar(6)">6</button>
+            <button onclick="digitar(7)">7</button>
+            <button onclick="digitar(8)">8</button>
+            <button onclick="digitar(9)">9</button>
+            <button onclick="limpar()">Limpar</button>
+            <button onclick="digitar(0)">0</button>
+            <button onclick="cancelar()">Cancelar</button>
+        </div>
+
+        <!-- Botão Enter -->
+        <button onclick="verificarSenha()" id="enter-button">ENTER</button>
+
+    </div>
+
+    <script>
+        let senhaCorreta = '';
+        let entrada = '';
+        let alarmeAtivado = false;
+
+        const display = document.getElementById('display');
+        const alarmToggle = document.getElementById('alarm-toggle');
+        const keypad = document.getElementById('keypad');
+        const enterButton = document.getElementById('enter-button');
+
+        function gerarSenha() {
+            senhaCorreta = String(Math.floor(1000 + Math.random() * 9000));
+            console.log("Senha gerada (debug):", senhaCorreta);
+        }
+
+        function atualizarDisplay(texto) {
+            display.textContent = texto;
+        }
+
+        function resetarDisplay() {
+            display.className = 'display-normal';
+        }
+
+        function digitar(numero) {
+            if (entrada.length < 4) {
+                entrada += numero;
+                atualizarDisplay(entrada.padEnd(4, '-'));
+                resetarDisplay();
+            }
+        }
+
+        function limpar() {
+            entrada = '';
+            atualizarDisplay('----');
+            resetarDisplay();
+        }
+
+        function cancelar() {
+            limpar();
+        }
+
+        function verificarSenha() {
+            if (entrada.length < 4) return;
+
+            if (entrada === senhaCorreta) {
+                display.className = 'display-green';
+            } else {
+                display.className = 'display-red';
+                if (alarmeAtivado) {
+                    desativarBotoes();
+                }
+            }
+        }
+
+        function alternarAlarme() {
+            alarmeAtivado = !alarmeAtivado;
+            alarmToggle.textContent = `Alarme: ${alarmeAtivado ? 'LIGADO' : 'DESLIGADO'}`;
+            alarmToggle.style.backgroundColor = alarmeAtivado ? '#f44' : '#ccc';
+        }
+
+        function desativarBotoes() {
+            keypad.classList.add('disabled');
+            enterButton.disabled = true;
+        }
+
+        // Iniciar com senha nova
+        window.onload = gerarSenha;
+    </script>
+
+</body>
+
+</html>
